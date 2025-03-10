@@ -33,4 +33,12 @@ public class ProductService {
         productRepository.save(product);
     }
 
+    public Product getCustomerById(Long id) {
+        return productRepository.findById(id).orElse(null);
+    }
+
+    public Product getDeleteById(Long id) {
+        productRepository.deleteById(id);
+        return null;
+    }
 }

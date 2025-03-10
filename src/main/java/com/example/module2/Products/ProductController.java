@@ -1,11 +1,13 @@
 package com.example.module2.Products;
 
+import com.example.module2.Customers.Customer;
 import com.example.module2.Orders.CustomerOrder;
 import com.example.module2.Orders.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api/v1/products")
@@ -27,6 +29,12 @@ public class ProductController {
         return ProductService.getProducts();
     }
 
+    @GetMapping("/{id}")
+    public Product viewOneProduct(@PathVariable Long id) {
+        Product product = productService.getCustomerById(id);
+        return product;
+    }
+
     @PostMapping
     public void addProduct(@RequestBody Product product) {
 
@@ -39,10 +47,29 @@ public class ProductController {
             @PathVariable Long product_id
     ) {
 
-        Product product = productRepository.getOne(product_id);
-        CustomerOrder customerOrder =  orderRepository.getOne(customer_order_id);
+        Optional<Product> productOptional = productRepository.findById(product_id);
+        Optional<CustomerOrder> customerOrderOptional =  orderRepository.findById(customer_order_id);
+
+        if  (productOptional.isEmpty()) {
+            throw new IllegalStateException("Product not found");
+        }
+        Product product = productOptional.get();
+        if  (customerOrderOptional.isEmpty()) {
+            throw new IllegalStateException("Customer order not found");
+        }
+        CustomerOrder customerOrder = customerOrderOptional.get();
+
         product.addToOrder(customerOrder);
+        customerOrder.addPurchasedProduct(product);
+
+        orderRepository.save(customerOrder);
         return productRepository.save(product);
+
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteOneProduct(@PathVariable Long id) {
+        Product product = productService.getDeleteById(id);
 
     }
 

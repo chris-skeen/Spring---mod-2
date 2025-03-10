@@ -26,4 +26,15 @@ public class CustomerController {
     public void addCustomer(@RequestBody Customer customer) {
         customerService.addNewCustomer(customer);
     }
+
+    @GetMapping("/{id}")
+    public Customer viewOneCustomer(@PathVariable Long id) {
+        Customer customer = customerService.getCustomerById(id);
+        return customer;
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteOneCustomer(@PathVariable Long id) {
+        Customer customer = customerService.getDeleteById(id);
+    }
 }

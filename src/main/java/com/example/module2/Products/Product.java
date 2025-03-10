@@ -1,5 +1,7 @@
 package com.example.module2.Products;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.util.Set;
@@ -22,11 +24,11 @@ public class Product {
             strategy = GenerationType.SEQUENCE,
             generator = "product_sequence"
     )
+    @JsonProperty
+    private Long id;
 
-    private Long product_id;
-
-    @ManyToMany(mappedBy = "purchasedProducts")
-
+    @JsonIgnore
+    @ManyToMany(mappedBy = "purchasedProducts", fetch = FetchType.EAGER)
     private Set<CustomerOrder> customerWithOrder = new HashSet<>();
 
     private String name;
@@ -34,7 +36,7 @@ public class Product {
     private Double price;
 
     public Product(Long product_id, String name, String description, Double price) {
-        this.product_id = product_id;
+        this.id = product_id;
         this.name = name;
         this.description = description;
         this.price = price;
